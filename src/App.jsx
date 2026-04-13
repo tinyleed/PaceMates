@@ -24,7 +24,7 @@ const App = () => {
             initializeStravaOAuth(code, profile, profileData, setProfileData);
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-    }, []);
+    }, [profileData, setProfileData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleProfileSelect = (profile) => {
         setCurrentProfile(profile);
