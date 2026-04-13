@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import TeamGoalBar from './TeamGoalBar';
 import HabitCard from './HabitCard';
 import Calendar from './Calendar';
-import { fetchStravaActivities, getStravaAuthUrl } from '../utils/strava';
+import { getStravaAuthUrl } from '../utils/strava';
 
 const ProfileView = ({ profile, profileData, setProfileData, onLogout }) => {
     const [todayDate] = useState(new Date().toISOString().split('T')[0]);
