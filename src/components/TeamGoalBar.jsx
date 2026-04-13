@@ -1,23 +1,50 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './TeamGoalBar.css';
 
-const TeamGoalBar = ({ progressMads, progressClara }) => {
-    const totalProgress = progressMads + progressClara;
-    const combinedCompletion = (totalProgress / 2).toFixed(2); // Assuming 100 is the max
+const TeamGoalBar = ({ monthHistory }) => {
+    const entries = Object.values(monthHistory || {});
+    const stats = [
+        {
+            key: 'strava',
+            icon: '🏋️',
+            count: entries.filter((day) => Boolean(day?.strava)).length
+        },
+        {
+            key: 'diet',
+            icon: '🥗',
+            count: entries.filter((day) => Boolean(day?.diet)).length
+        },
+        {
+            key: 'meditation',
+            icon: '🧘',
+            count: entries.filter((day) => Boolean(day?.meditation)).length
+        },
+        {
+            key: 'sleep',
+            icon: '😴',
+            count: entries.filter((day) => Boolean(day?.sleep)).length
+        }
+    ];
 
     return (
-        <div className="goal-bar">
-            <div className="progress" style={{ width: `${combinedCompletion}%`, background: 'linear-gradient(to right, blue, rose)' }}>
-                {combinedCompletion}%
-            </div>
+        <div className="mb-6 grid grid-cols-4 gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+            {stats.map((item) => (
+                <div key={item.key} className="text-center">
+                    <div className="text-xl">{item.icon}</div>
+                    <p className="mt-1 text-3xl font-semibold text-slate-900">{item.count}</p>
+                    <p className="text-sm text-slate-500">dage</p>
+                </div>
+            ))}
         </div>
     );
 };
 
 TeamGoalBar.propTypes = {
-    progressMads: PropTypes.number.isRequired,
-    progressClara: PropTypes.number.isRequired,
+    monthHistory: PropTypes.object
+};
+
+TeamGoalBar.defaultProps = {
+    monthHistory: {}
 };
 
 export default TeamGoalBar;

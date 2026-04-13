@@ -4,14 +4,50 @@
 
 const CLIENT_ID = process.env.REACT_APP_STRAVA_CLIENT_ID || '224374';
 const CLIENT_SECRET = process.env.REACT_APP_STRAVA_CLIENT_SECRET || '0e930f4a5e450d85d616578eb99d753cceca1db4';
-const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || window.location.origin;
 const CORS_PROXY = 'https://corsproxy.io/?';
+
+function resolveRedirectUri() {
+    const { hostname, origin } = window.location;
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+    const isGitHubPreview = hostname.endsWith('.app.github.dev') || hostname.endsWith('.github.dev');
+
+    if (isGitHubPreview) {
+        return origin;
+    }
+
+    const envRedirect = process.env.REACT_APP_REDIRECT_URI?.trim();
+
+    if (!envRedirect) {
+        if (process.env.NODE_ENV !== 'production' && isLocalHost) {
+            return 'http://localhost:3000';
+        }
+
+        return origin;
+    }
+
+    try {
+        const envUrl = new URL(envRedirect);
+        const currentHost = window.location.hostname;
+        const envIsLocal = envUrl.hostname === 'localhost' || envUrl.hostname === '127.0.0.1';
+        const currentIsLocal = currentHost === 'localhost' || currentHost === '127.0.0.1';
+
+        // If env points to localhost but app runs on another host (e.g. codespaces), prefer the live origin.
+        if (envIsLocal && !currentIsLocal) {
+            return window.location.origin;
+        }
+
+        return `${envUrl.origin}${envUrl.pathname}`.replace(/\/$/, '');
+    } catch {
+        return window.location.origin;
+    }
+}
 
 // Returns the Strava OAuth authorization URL for a given profile
 function getStravaAuthUrl(profile) {
+    const redirectUri = resolveRedirectUri();
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
         response_type: 'code',
         approval_prompt: 'auto',
         scope: 'read,activity:read_all',
@@ -23,6 +59,7 @@ function getStravaAuthUrl(profile) {
 // Handles OAuth callback: exchanges code for tokens and persists them
 async function initializeStravaOAuth(code, profile, profileData, setProfileData) {
     try {
+        const redirectUri = resolveRedirectUri();
         const response = await fetch(`${CORS_PROXY}https://www.strava.com/oauth/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -31,6 +68,7 @@ async function initializeStravaOAuth(code, profile, profileData, setProfileData)
                 client_secret: CLIENT_SECRET,
                 code,
                 grant_type: 'authorization_code',
+                redirect_uri: redirectUri,
             }),
         });
         const data = await response.json();

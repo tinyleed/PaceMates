@@ -18,7 +18,16 @@ const App = () => {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code');
-        const profile = params.get('profile');
+        const profile = params.get('state') || params.get('profile');
+        const oauthError = params.get('error');
+
+        if (oauthError) {
+            const reason = params.get('error_description') || oauthError;
+            console.error('Strava OAuth callback error:', reason);
+            alert(`Strava connection failed: ${reason}`);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
 
         if (code && profile) {
             initializeStravaOAuth(code, profile, profileData, setProfileData);
