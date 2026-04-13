@@ -10,3 +10,31 @@
   .habit-card { @apply p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-slate-400 transition-all duration-200 cursor-pointer; }
   .habit-card.checked { @apply border-green-400 bg-green-50; }
 }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+input[type='checkbox'] {
+  @apply accent-blue-500;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
