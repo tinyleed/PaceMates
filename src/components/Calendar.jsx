@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Calendar.css';
 
-const Calendar = ({ data = {} }) => {
+const Calendar = ({ data }) => {
+  const safeData = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+
   const getColor = (distance) => {
     if (distance >= 20) return 'rgba(0, 128, 0, 1)'; // deep green
     if (distance >= 10) return 'rgba(144, 238, 144, 1)'; // medium green
@@ -12,7 +14,7 @@ const Calendar = ({ data = {} }) => {
 
   return (
     <div className="calendar">
-      {Object.entries(data).map(([date, distance]) => (
+      {Object.entries(safeData).map(([date, distance]) => (
         <div key={date} className="calendar-day" style={{ backgroundColor: getColor(distance) }}>
           {date}
           <div className="distance">{distance} km</div>
